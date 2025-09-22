@@ -31,6 +31,29 @@
     .approve { background: #d4f8d4; }
     .reject { background: #ffd6d6; }
     .reschedule { background: #fff3cd; }
+    #editForm {
+      margin-top: 15px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fefefe;
+      display: none;
+    }
+    #editForm input, #editForm textarea {
+      width: 100%;
+      padding: 8px;
+      margin: 6px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    #editForm button {
+      background: #4caf50;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -43,30 +66,55 @@
 
     <button id="wa-approve" class="btn approve">Approve</button>
     <button id="wa-reject" class="btn reject">Reject</button>
-    <button id="wa-reschedule" class="btn reschedule">Reschedule</button>
+    <button id="wa-reschedule" class="btn reschedule">Reschedule / Edit</button>
+
+    <!-- Form edit (muncul setelah klik Reschedule) -->
+    <div id="editForm">
+      <h3>Reschedule / Edit Jadwal</h3>
+      <label>Tanggal Baru:</label>
+      <input type="date" id="newDate">
+      <label>Jam Baru:</label>
+      <input type="time" id="newTime">
+      <label>Keterangan Tambahan:</label>
+      <textarea id="note" rows="3"></textarea>
+      <button id="submitEdit">Kirim Pembaruan</button>
+    </div>
   </div>
 
 <script>
-const phone = "6281234567890"; // nomor admin (format internasional tanpa +)
+const phone = "6285761016240"; // nomor WhatsApp kamu
 const id = "REQ-20250918-001";
 
+// Approve
 document.getElementById('wa-approve').onclick = () => {
   const text = encodeURIComponent(`Permintaan ${id} telah *DISETUJUI* ✅`);
   window.location.href = `https://wa.me/${phone}?text=${text}`;
 };
 
+// Reject
 document.getElementById('wa-reject').onclick = () => {
   const reason = prompt("Masukkan alasan penolakan:");
-  const text = encodeURIComponent(`Permintaan ${id} *DITOLAK* ❌\nAlasan: ${reason}`);
-  window.location.href = `https://wa.me/${phone}?text=${text}`;
+  if(reason){
+    const text = encodeURIComponent(`Permintaan ${id} *DITOLAK* ❌\nAlasan: ${reason}`);
+    window.location.href = `https://wa.me/${phone}?text=${text}`;
+  }
 };
 
+// Reschedule/Edit
 document.getElementById('wa-reschedule').onclick = () => {
-  const tgl = prompt("Masukkan tanggal baru (YYYY-MM-DD):");
-  const jam = prompt("Masukkan jam baru (HH:MM):");
+  document.getElementById('editForm').style.display = 'block';
+};
+
+// Submit Edit
+document.getElementById('submitEdit').onclick = () => {
+  const tgl = document.getElementById('newDate').value;
+  const jam = document.getElementById('newTime').value;
+  const note = document.getElementById('note').value;
   if(tgl && jam){
-    const text = encodeURIComponent(`Permintaan ${id} *DIRE-SCHEDULE* 🔄\nJadwal baru: ${tgl} ${jam}`);
+    const text = encodeURIComponent(`Permintaan ${id} *DIRE-SCHEDULE* 🔄\nJadwal baru: ${tgl} ${jam}\nKeterangan: ${note}`);
     window.location.href = `https://wa.me/${phone}?text=${text}`;
+  } else {
+    alert("Tanggal dan jam wajib diisi!");
   }
 };
 </script>
